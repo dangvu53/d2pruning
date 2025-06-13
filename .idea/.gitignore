@@ -8,5 +8,7 @@
 /dataSources.local.xml
 
 /env/
-__pycache__/
+env/
+data-model/
+/__pycache__/
 *.pyc

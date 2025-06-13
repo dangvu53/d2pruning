@@ -27,7 +27,8 @@ import numpy as np
 import torch
 
 import datasets
-from datasets import load_dataset, load_metric, Dataset, DatasetDict
+from datasets import load_dataset, Dataset, DatasetDict
+from evaluate import load as load_metric
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 from core.training import Trainer, TrainingDynamicsLogger
@@ -977,19 +978,19 @@ def main():
         # the samples passed). When using mixed precision, we add `pad_to_multiple_of=8` to pad all tensors to multiple
         # of 8s, which will enable the use of Tensor Cores on NVIDIA hardware with compute capability >= 7.5 (Volta).
         if args.train_logger:
-            data_collator = IndexedDataCollatorWithPadding(tokenizer, pad_to_multiple_of=(8 if accelerator.use_fp16 else None))
+            data_collator = IndexedDataCollatorWithPadding(tokenizer, pad_to_multiple_of=(8 if accelerator.mixed_precision == "fp16" else None))
         else:
-            data_collator = DataCollatorWithPadding(tokenizer, pad_to_multiple_of=(8 if accelerator.use_fp16 else None))
+            data_collator = DataCollatorWithPadding(tokenizer, pad_to_multiple_of=(8 if accelerator.mixed_precision == "fp16" else None))
 
 
     train_dataloader = DataLoader(
         train_dataset, shuffle=True, collate_fn=data_collator, batch_size=args.per_device_train_batch_size
     )
     eval_dataloader = DataLoader(eval_dataset,
-                                 collate_fn=DataCollatorWithPadding(tokenizer, pad_to_multiple_of=(8 if accelerator.use_fp16 else None)),
+                                 collate_fn=DataCollatorWithPadding(tokenizer, pad_to_multiple_of=(8 if accelerator.mixed_precision == "fp16" else None)),
                                  batch_size=args.per_device_eval_batch_size)
     test_dataloader = DataLoader(test_dataset,
-                                 collate_fn=DataCollatorWithPadding(tokenizer, pad_to_multiple_of=(8 if accelerator.use_fp16 else None)),
+                                 collate_fn=DataCollatorWithPadding(tokenizer, pad_to_multiple_of=(8 if accelerator.mixed_precision == "fp16" else None)),
                                  batch_size=args.per_device_eval_batch_size)
 
     # Optimizer
