@@ -40,7 +40,6 @@ from accelerate import Accelerator
 from accelerate.utils import set_seed
 from huggingface_hub import Repository
 from transformers import (
-    AdamW,
     # AutoConfig,
     # AutoModelForSequenceClassification,
     # AutoTokenizer,
@@ -56,6 +55,8 @@ from transformers import (
     RobertaTokenizer,
     RobertaForSequenceClassification
 )
+
+from torch.optim import AdamW
 
 # from transformers.utils import get_full_repo_name
 from transformers.utils.versions import require_version
