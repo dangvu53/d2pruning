@@ -10,15 +10,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Model files and data
-data-model/
-*.pickle
-*.pkl
-*.npy
-*.h5
-*.pth
-*.bin
-
 # Jupyter Notebook
 .ipynb_checkpoints
 
