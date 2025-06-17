@@ -25,6 +25,7 @@ import torch.nn.functional as F
 from pathlib import Path
 import numpy as np
 import torch
+from sklearn.neighbors import LocalOutlierFactor
 
 import datasets
 from datasets import load_dataset, Dataset, DatasetDict
@@ -1365,12 +1366,75 @@ def main():
             training_dynamics = pickled_data['training_dynamics']
             training_dynamics_metrics(training_dynamics, train_dataset, data_importance)
             EL2N(training_dynamics, train_dataset, data_importance, num_labels, max_epoch=10)
+            
+            # Add LOF importance calculation using saved features
+            if args.save_feature and len(embeds) > 0:
+                print("Calculating LOF importance scores...")
+                lof_importance_metric(embeds, train_dataset, data_importance, n_neighbors=20)
+                print("LOF importance scores calculated and stored.")
 
             task_name = args.task_name.split('/')[0]
             data_score_path = os.path.join(args.output_dir, f'data-score-{task_name}.pickle')
             print(f'Saving data score at {data_score_path}')
             with open(data_score_path, 'wb') as handle:
                 pickle.dump(data_importance, handle)
+
+def lof_importance_metric(features, dataset, data_importance, n_neighbors=20, contamination='auto'):
+    """
+    Calculate data importance using Local Outlier Factor (LOF).
+    Similar structure to training_dynamics_metrics function.
+    
+    Args:
+        features: extracted features/embeddings from model (numpy array or torch tensor)
+        dataset: dataset containing the samples
+        data_importance: dictionary to store importance scores
+        n_neighbors: number of neighbors to consider for LOF calculation
+        contamination: expected proportion of outliers in the data
+    
+    Returns:
+        data_importance: updated dictionary with LOF importance scores
+    """
+    data_size = len(dataset)
+    
+    # Convert features to numpy if needed
+    if hasattr(features, 'cpu'):
+        features_np = features.cpu().numpy()
+    elif torch.is_tensor(features):
+        features_np = features.numpy()
+    else:
+        features_np = np.array(features)
+    
+    # Ensure we have the right number of features for the dataset
+    if len(features_np) != data_size:
+        raise ValueError(f"Features length {len(features_np)} doesn't match dataset size {data_size}")
+    
+    # Initialize LOF detector
+    # Ensure n_neighbors is not larger than the number of samples
+    effective_n_neighbors = min(n_neighbors, data_size - 1)
+    
+    lof = LocalOutlierFactor(
+        n_neighbors=effective_n_neighbors,
+        contamination=contamination,
+        novelty=False
+    )
+    
+    # Fit and get negative outlier factor scores
+    lof.fit(features_np)
+    lof_scores = -lof.negative_outlier_factor_
+    
+    # Normalize scores to [0, 1] range for consistency with other metrics
+    min_score = np.min(lof_scores)
+    max_score = np.max(lof_scores)
+    normalized_scores = (lof_scores - min_score) / (max_score - min_score + 1e-8)
+    
+    # Initialize LOF importance scores in data_importance
+    data_importance['lof_importance'] = torch.zeros(data_size).type(torch.float32)
+    
+    # Store importance scores in data_importance dictionary
+    for idx, score in enumerate(normalized_scores):
+        data_importance['lof_importance'][idx] = float(score)
+    
+    return data_importance
 
 if __name__ == "__main__":
     main()
