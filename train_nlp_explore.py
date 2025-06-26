@@ -80,8 +80,10 @@ task_to_keys = {
     "anli": ("premise", "hypothesis"),
     "yelp_review_full": ("text", None),
     "alisawuffles/WANLI": ("premise", "hypothesis"),
+    "goddawg/anli-2k": ("premise", "hypothesis"),
+    "goddawg/agnews-2k": ("title", "desciption")
 }
-
+    
 def preprocess_yelp(args, raw_datasets):
     df_train = pd.DataFrame(raw_datasets['train'])
     col_names = list(df_train.columns.values)
@@ -169,7 +171,7 @@ def preprocess_counterfactual_imdb(args):
     return DatasetDict({"test": dataset})
 
 
-def preprocess_for_val(args, raw_datasets, val_size=5000, is_anli=False):
+def preprocess_for_val(args, raw_datasets, val_size=200, is_anli=False):
 
     if is_anli:
         df_train = pd.DataFrame(raw_datasets['train_r1'])
@@ -623,7 +625,10 @@ def main():
     elif args.task_name == 'anli':
         # raw_datasets = preprocess_for_val(args, raw_datasets, val_size=5000, is_anli = True)
         pass
-
+    elif args.task_name == 'goddawg/anli-2k':
+        raw_datasets = preprocess_for_val(args, raw_datasets, val_size=200)
+    elif args.task_name == 'goddawg/agnews-2k':
+        raw_datasets = preprocess_for_val(args, raw_datasets, val_size=200)
     # Labels
     if args.task_name is not None:
         is_regression = args.task_name == "stsb"
