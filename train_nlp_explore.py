@@ -1198,6 +1198,7 @@ def main():
 
             eval_metric = metric.compute()
             logger.info(f"epoch {epoch}: validation: {eval_metric}")
+            print(f"epoch {epoch}: validation: {eval_metric}")
 
             save_checkpoint = False
             if eval_metric[metric.name] >= best_metric:
@@ -1216,6 +1217,7 @@ def main():
                     test_metric = metric.compute()
                     best_test_metric = test_metric[metric.name]
                     logger.info(f"epoch {epoch}: test: {test_metric}")
+                    print(f"epoch {epoch}: test: {test_metric}")
 
             else:
                 plateau_counter += 1
