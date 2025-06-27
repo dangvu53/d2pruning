@@ -81,8 +81,25 @@ task_to_keys = {
     "yelp_review_full": ("text", None),
     "alisawuffles/WANLI": ("premise", "hypothesis"),
     "goddawg/anli-2k": ("premise", "hypothesis"),
-    "goddawg/agnews-6k": ("title", "desciption")
+    "goddawg/agnews-6k": ("title", "description")
 }
+
+def preprocess_agnews(args, raw_datasets):
+    df_train = raw_datasets["train"].to_pandas()
+    df_test = raw_datasets["test"].to_pandas()
+
+    df_train["label"] -= 1
+    df_test["label"] -= 1
+
+    dataset_train_fixed = Dataset.from_pandas(df_train)
+    dataset_test_fixed = Dataset.from_pandas(df_test)
+
+    raw_datasets= DatasetDict({
+        "train": dataset_train_fixed,
+        "test": dataset_test_fixed
+    })
+
+    return raw_datasets
     
 def preprocess_yelp(args, raw_datasets):
     df_train = pd.DataFrame(raw_datasets['train'])
@@ -627,6 +644,7 @@ def main():
     elif args.task_name == 'goddawg/anli-2k':
         raw_datasets = preprocess_for_val(args, raw_datasets, val_size=200)
     elif args.task_name == 'goddawg/agnews-6k':
+        raw_datasets = preprocess_agnews(args, raw_datasets)
         raw_datasets = preprocess_for_val(args, raw_datasets, val_size=1000)
     # Labels
     if args.task_name is not None:
