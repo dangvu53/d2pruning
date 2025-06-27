@@ -174,8 +174,8 @@ def preprocess_counterfactual_imdb(args):
 def preprocess_for_val(args, raw_datasets, val_size=200, is_anli=False):
 
     if is_anli:
-        df_train = pd.DataFrame(raw_datasets['train_r1'])
-        df_test = pd.DataFrame(raw_datasets['test_r1'])
+        df_train = pd.DataFrame(raw_datasets['train_r3'])
+        df_test = pd.DataFrame(raw_datasets['test_r3'])
     else:
         df_train = pd.DataFrame(raw_datasets['train'])
         df_test = pd.DataFrame(raw_datasets['test'])
@@ -204,8 +204,8 @@ def preprocess_for_val(args, raw_datasets, val_size=200, is_anli=False):
         df_train = df_train.iloc[index]
     # raw_datasets['train'] = datasets.Dataset.from_pandas(df_train).remove_columns(["__index_level_0__"])
     if is_anli:
-        raw_datasets['train_r1'] = datasets.Dataset.from_pandas(df_train).remove_columns(["__index_level_0__"])
-        raw_datasets['validation_r1'] = datasets.Dataset.from_pandas(df_val).remove_columns(["__index_level_0__"])
+        raw_datasets['train_r3'] = datasets.Dataset.from_pandas(df_train).remove_columns(["__index_level_0__"])
+        raw_datasets['validation_r3'] = datasets.Dataset.from_pandas(df_val).remove_columns(["__index_level_0__"])
     else:
         raw_datasets['train'] = datasets.Dataset.from_pandas(df_train).remove_columns(["__index_level_0__"])
         raw_datasets['validation'] = datasets.Dataset.from_pandas(df_val).remove_columns(["__index_level_0__"])
@@ -214,7 +214,7 @@ def preprocess_for_val(args, raw_datasets, val_size=200, is_anli=False):
         index = np.load(args.test_index_path)
         df_test = df_test.iloc[index]
         if is_anli:
-            raw_datasets['test_r1'] = datasets.Dataset.from_pandas(df_test).remove_columns(["__index_level_0__"])
+            raw_datasets['test_r3'] = datasets.Dataset.from_pandas(df_test).remove_columns(["__index_level_0__"])
         else:
             raw_datasets['test'] = datasets.Dataset.from_pandas(df_test).remove_columns(["__index_level_0__"])
 
@@ -633,11 +633,11 @@ def main():
         is_regression = args.task_name == "stsb"
         if not is_regression:
             if args.task_name == "anli":
-                targets = raw_datasets["train_r1"]["label"]
+                targets = raw_datasets["train_r3"]["label"]
                 try:
-                    label_list = raw_datasets["train_r1"].features["label"].names
+                    label_list = raw_datasets["train_r3"].features["label"].names
                 except AttributeError:
-                    label_list = list(set(raw_datasets["train_r1"]["label"]))
+                    label_list = list(set(raw_datasets["train_r3"]["label"]))
             else:
                 targets = raw_datasets["train"]["label"]
                 try:
@@ -684,7 +684,7 @@ def main():
     # )
 
     if args.coreset:
-        df_train = pd.DataFrame(raw_datasets['train' if args.task_name != "anli" else "train_r1"])
+        df_train = pd.DataFrame(raw_datasets['train' if args.task_name != "anli" else "train_r3"])
         col_names = list(df_train.columns.values)
         total_num = len(df_train)
 
@@ -869,7 +869,7 @@ def main():
         for col in list(df_train.columns.values):
             if col not in col_names:
                 df_train = df_train.drop(columns=[col])
-        raw_datasets['train' if args.task_name != "anli" else "train_r1"] = datasets.Dataset.from_pandas(df_train).remove_columns(["__index_level_0__"])
+        raw_datasets['train' if args.task_name != "anli" else "train_r3"] = datasets.Dataset.from_pandas(df_train).remove_columns(["__index_level_0__"])
         print(raw_datasets)
 
         print("Pruned %s samples in original train set to %s" % (total_num, len(df_train)))
@@ -979,14 +979,14 @@ def main():
         processed_datasets = raw_datasets.map(
             preprocess_function,
             batched=True,
-            remove_columns=raw_datasets['train' if args.task_name != "anli" else "train_r1"].column_names,
+            remove_columns=raw_datasets['train' if args.task_name != "anli" else "train_r3"].column_names,
             desc="Running tokenizer on dataset",
         )
 
     if args.task_name == 'anli':
-        train_dataset = processed_datasets["train_r1"]
-        eval_dataset = processed_datasets["dev_r1"]
-        test_dataset = processed_datasets["test_r1"]
+        train_dataset = processed_datasets["train_r3"]
+        eval_dataset = processed_datasets["dev_r3"]
+        test_dataset = processed_datasets["test_r3"]
     else:
         train_dataset = processed_datasets["train"]
         eval_dataset = processed_datasets["validation_matched" if args.task_name == "mnli" else "validation"]
@@ -1299,7 +1299,7 @@ def main():
                 processed_datasets = raw_datasets.map(
                     preprocess_function,
                     batched=True,
-                    remove_columns=raw_datasets['test' if args.ood_task != "anli" else "test_r1"].column_names,
+                    remove_columns=raw_datasets['test' if args.ood_task != "anli" else "test_r3"].column_names,
                     desc="Running tokenizer on dataset",
                 )
             eval_dataloader = DataLoader(processed_datasets["test"], collate_fn=data_collator,
