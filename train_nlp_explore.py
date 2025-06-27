@@ -81,7 +81,8 @@ task_to_keys = {
     "yelp_review_full": ("text", None),
     "alisawuffles/WANLI": ("premise", "hypothesis"),
     "goddawg/anli-2k": ("premise", "hypothesis"),
-    "goddawg/agnews-6k": ("title", "description")
+    "goddawg/agnews-6k": ("title", "description"),
+    "goddawg/anli-6k": ("premise", "hypothesis")
 }
 
 def preprocess_agnews(args, raw_datasets):
