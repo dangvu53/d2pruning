@@ -81,7 +81,7 @@ task_to_keys = {
     "yelp_review_full": ("text", None),
     "alisawuffles/WANLI": ("premise", "hypothesis"),
     "goddawg/anli-2k": ("premise", "hypothesis"),
-    "goddawg/agnews-2k": ("title", "desciption")
+    "goddawg/agnews-6k": ("title", "desciption")
 }
     
 def preprocess_yelp(args, raw_datasets):
@@ -626,8 +626,8 @@ def main():
         pass
     elif args.task_name == 'goddawg/anli-2k':
         raw_datasets = preprocess_for_val(args, raw_datasets, val_size=200)
-    elif args.task_name == 'goddawg/agnews-2k':
-        raw_datasets = preprocess_for_val(args, raw_datasets, val_size=200)
+    elif args.task_name == 'goddawg/agnews-6k':
+        raw_datasets = preprocess_for_val(args, raw_datasets, val_size=1000)
     # Labels
     if args.task_name is not None:
         is_regression = args.task_name == "stsb"
