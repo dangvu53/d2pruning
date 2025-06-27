@@ -643,6 +643,8 @@ def main():
         pass
     elif args.task_name == 'goddawg/anli-2k':
         raw_datasets = preprocess_for_val(args, raw_datasets, val_size=200)
+    elif args.task_name == 'goddawg/anli-6k':
+        raw_datasets = preprocess_for_val(args, raw_datasets, val_size=1000)
     elif args.task_name == 'goddawg/agnews-6k':
         raw_datasets = preprocess_agnews(args, raw_datasets)
         raw_datasets = preprocess_for_val(args, raw_datasets, val_size=1000)
