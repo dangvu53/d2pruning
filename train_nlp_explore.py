@@ -41,9 +41,9 @@ from accelerate import Accelerator
 from accelerate.utils import set_seed
 from huggingface_hub import Repository
 from transformers import (
-    # AutoConfig,
-    # AutoModelForSequenceClassification,
-    # AutoTokenizer,
+    AutoConfig,
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
     BertConfig,
     BertForSequenceClassification,
     BertTokenizer,
@@ -182,10 +182,6 @@ def preprocess_for_val(args, raw_datasets, val_size=200, is_anli=False):
 
     total_num = len(df_train)
 
-    if args.train_index_path:
-        index = np.load(args.train_index_path)
-        df_train = df_train.iloc[index]
-
     labels = df_train["label"]
     if os.path.exists(args.val_index_path):
         val_idxs = np.load(args.val_index_path).tolist()
@@ -203,6 +199,9 @@ def preprocess_for_val(args, raw_datasets, val_size=200, is_anli=False):
     df_train = df_train.iloc[list(set(range(0, len(df_train))).difference(val_idxs))]
     print("Reduced training set from %s to %s for creating validation set" % (total_num, len(df_train)))
 
+    if args.train_index_path:
+        index = np.load(args.train_index_path)
+        df_train = df_train.iloc[index]
     # raw_datasets['train'] = datasets.Dataset.from_pandas(df_train).remove_columns(["__index_level_0__"])
     if is_anli:
         raw_datasets['train_r1'] = datasets.Dataset.from_pandas(df_train).remove_columns(["__index_level_0__"])
@@ -880,9 +879,25 @@ def main():
     else:
         pass
 
-    config = RobertaConfig.from_pretrained(args.model_name_or_path, num_labels=num_labels, finetuning_task=args.task_name)
-    tokenizer = RobertaTokenizer.from_pretrained(args.model_name_or_path, use_fast=not args.use_slow_tokenizer)
-    model = RobertaForSequenceClassification.from_pretrained(
+#    if args.model_name_or_path == "roberta-base":
+#        config = RobertaConfig.from_pretrained(args.model_name_or_path, num_labels=num_labels, finetuning_task=args.task_name)
+#        tokenizer = RobertaTokenizer.from_pretrained(args.model_name_or_path, use_fast=not args.use_slow_tokenizer)
+#        model = RobertaForSequenceClassification.from_pretrained(
+#            args.model_name_or_path,
+#            from_tf=bool(".ckpt" in args.model_name_or_path),
+#            config=config,
+#        )
+#    elif args.model_name_or_path == "bert-base-uncased":
+#        config = BertConfig.from_pretrained(args.model_name_or_path, num_labels=num_labels, finetuning_task=args.task_name)
+#        tokenizer = BertTokenizer.from_pretrained(args.model_name_or_path, use_fast=not args.use_slow_tokenizer)
+#        model = BertForSequenceClassification.from_pretrained(
+#            args.model_name_or_path,
+#            from_tf=bool(".ckpt" in args.model_name_or_path),
+#            config=config,
+#        )
+    config = AutoConfig.from_pretrained(args.model_name_or_path, num_labels=num_labels, finetuning_task=args.task_name)
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path, use_fast=not args.use_slow_tokenizer)
+    model = AutoModelForSequenceClassification.from_pretrained(
         args.model_name_or_path,
         from_tf=bool(".ckpt" in args.model_name_or_path),
         config=config,
