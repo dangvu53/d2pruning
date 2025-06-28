@@ -12,6 +12,7 @@ from datetime import datetime
 from selection_mp import select_coreset
 
 from torchvision import models
+import timm
 
 from core.model_generator import wideresnet, preact_resnet, resnet
 from core.training import Trainer, TrainingDynamicsLogger
@@ -30,7 +31,7 @@ parser.add_argument('--iterations', type=int, metavar='N',
 parser.add_argument('--batch-size', type=int, default=256, metavar='N',
                     help='input batch size for training (default: 256)')
 parser.add_argument('--lr', type=float, default=0.1)
-parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50', 'resnet34'])
+parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50', 'resnet34', 'resnet101', 'efficientnet_b0', 'swin_base'])
 parser.add_argument('--scheduler', type=str, default='default', choices=['default', 'short', 'cosine', 'short-400k'])
 
 parser.add_argument('--ignore-td', action='store_true', default=False)
@@ -192,6 +193,19 @@ if args.network == 'resnet34':
 if args.network == 'resnet50':
     print('Using resnet50.')
     model = torchvision.models.resnet50(pretrained=False, progress=True)
+if args.network == 'resnet101':
+    print('Using resnet101.')
+    model = torchvision.models.resnet101(pretrained=False, progress=True)
+if args.network == 'efficientnet_b0':
+    print('Using efficientnet_b0.')
+    model = torchvision.models.efficientnet_b0(pretrained=False, progress=True)
+if args.network == 'swim_base':
+    print('Using swin_base_patch4_window7_224.')
+    model = timm.create_model(
+        'swin_base_patch4_window7_224',
+        pretrained=False,
+        num_classes=1000
+    )
 
 model=torch.nn.parallel.DataParallel(model).cuda()
 # model=model.cuda()
