@@ -1222,6 +1222,19 @@ def main():
                     logger.info(f"epoch {epoch}: test: {test_metric}")
                     print(f"epoch {epoch}: test: {test_metric}")
 
+            if epoch == args.num_train_epochs and args.do_test:
+                    for step, batch in enumerate(test_dataloader):
+                        outputs = model(**batch)
+                        predictions = outputs.logits.argmax(dim=-1) if not is_regression else outputs.logits.squeeze()
+                        metric.add_batch(
+                            predictions=accelerator.gather(predictions),
+                            references=accelerator.gather(batch["labels"]),
+                        )
+
+                    test_metric = metric.compute()
+                    logger.info(f"epoch {epoch}: test: {test_metric}")
+                    print(f"epoch {epoch}: test: {test_metric}")
+
             else:
                 plateau_counter += 1
 
