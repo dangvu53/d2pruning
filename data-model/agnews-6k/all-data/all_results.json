@@ -1,0 +1,20 @@
+{"accuracy": 0.89}
+{"accuracy": 0.906}
+{"best_accuracy": 0.893}
+{"best_test_accuracy": 0.906} //electra
+{"accuracy": 0.913}
+{"accuracy": 0.926}
+{"best_accuracy": 0.919}
+{"best_test_accuracy": 0.926} //roberta
+{"accuracy": 0.913}
+{"accuracy": 0.926}
+{"best_accuracy": 0.919}
+{"best_test_accuracy": 0.926} //roberta
+{"accuracy": 0.907}
+{"accuracy": 0.911}
+{"best_accuracy": 0.914}
+{"best_test_accuracy": 0.911}.//bert
+{"accuracy": 0.907}
+{"accuracy": 0.911}
+{"best_accuracy": 0.914}
+{"best_test_accuracy": 0.911}

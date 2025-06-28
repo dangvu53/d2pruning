@@ -1,0 +1,12 @@
+{"accuracy": 0.889}
+{"accuracy": 0.902}
+{"best_accuracy": 0.89}
+{"best_test_accuracy": 0.902} //bert
+{"accuracy": 0.884}
+{"accuracy": 0.901}
+{"best_accuracy": 0.889}
+{"best_test_accuracy": 0.901} //roberta
+{"accuracy": 0.875}
+{"accuracy": 0.884}
+{"best_accuracy": 0.878}
+{"best_test_accuracy": 0.884}. //electra
