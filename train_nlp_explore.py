@@ -1204,39 +1204,37 @@ def main():
             print(f"epoch {epoch}: validation: {eval_metric}")
 
             save_checkpoint = False
-            if eval_metric[metric.name] >= best_metric:
-                best_metric = eval_metric[metric.name]
-                save_checkpoint = True
-                plateau_counter = 0
-                if args.do_test:
-                    for step, batch in enumerate(test_dataloader):
-                        outputs = model(**batch)
-                        predictions = outputs.logits.argmax(dim=-1) if not is_regression else outputs.logits.squeeze()
-                        metric.add_batch(
-                            predictions=accelerator.gather(predictions),
-                            references=accelerator.gather(batch["labels"]),
-                        )
+            #if eval_metric[metric.name] >= best_metric:
+            #    best_metric = eval_metric[metric.name]
+            #    save_checkpoint = True
+            #    plateau_counter = 0
+            #    if args.do_test:
+            #        for step, batch in enumerate(test_dataloader):
+            #            outputs = model(**batch)
+            #            predictions = outputs.logits.argmax(dim=-1) if not is_regression else outputs.logits.squeeze()
+            #            metric.add_batch(
+            #                predictions=accelerator.gather(predictions),
+            #                references=accelerator.gather(batch["labels"]),
+            #            )
 
-                    test_metric = metric.compute()
-                    best_test_metric = test_metric[metric.name]
-                    logger.info(f"epoch {epoch}: test: {test_metric}")
-                    print(f"epoch {epoch}: test: {test_metric}")
+            #        test_metric = metric.compute()
+            #        best_test_metric = test_metric[metric.name]
+            #        logger.info(f"epoch {epoch}: test: {test_metric}")
+            #        print(f"epoch {epoch}: test: {test_metric}")
 
-            if epoch == args.num_train_epochs and args.do_test:
-                    for step, batch in enumerate(test_dataloader):
-                        outputs = model(**batch)
-                        predictions = outputs.logits.argmax(dim=-1) if not is_regression else outputs.logits.squeeze()
-                        metric.add_batch(
-                            predictions=accelerator.gather(predictions),
-                            references=accelerator.gather(batch["labels"]),
-                        )
-
-                    test_metric = metric.compute()
-                    logger.info(f"epoch {epoch}: test: {test_metric}")
-                    print(f"epoch {epoch}: test: {test_metric}")
-
-            else:
-                plateau_counter += 1
+            #else:
+            #    plateau_counter += 1
+            
+            for step, batch in enumerate(test_dataloader):
+                outputs = model(**batch)
+                predictions = outputs.logits.argmax(dim=-1) if not is_regression else outputs.logits.squeeze()
+                metric.add_batch(
+                    predictions=accelerator.gather(predictions),
+                    references=accelerator.gather(batch["labels"]),
+                )
+            test_metric = metric.compute()
+            logger.info(f"epoch {epoch}: test: {test_metric}")
+            print(f"epoch {epoch}: test: {test_metric}")
 
             if args.with_tracking:
                 accelerator.log(
