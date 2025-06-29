@@ -99,7 +99,7 @@ parser.add_argument('--local_rank', type=str)
 
 
 args = parser.parse_args()
-start_time = time.time()
+start_time = datetime.now()
 
 assert args.epochs is None or args.iterations is None, "Both epochs and iterations are used!"
 
@@ -165,7 +165,7 @@ coreset_descending = (args.data_score_descending == 1)
 total_num = len(trainset)
 
 if args.coreset:
-    start_time = time.time()
+    start_time = datetime.now()
     trainset, coreset_index, _ = select_coreset(trainset, args)
     print("Completed coreset selection in %s seconds" % (time.time()-start_time))
     np.save(coreset_index_path, np.array(coreset_index))
@@ -296,7 +296,7 @@ test_loss, test_acc = trainer.test(model, testloader, criterion, device, log_int
 # test_loss, test_acc = trainer.test(model, testloader, criterion, device, log_interval=200,  printlog=True, topk=1)
 
 print('done')
-# print(f'Total time consumed: {(datetime.now() - start_time).total_seconds():.2f}')
+print(f'Total time consumed: {(datetime.now() - start_time).total_seconds():.2f}')
 print('==========================')
 print(f'Best acc: {best_acc * 100:.2f}')
 print(f'Best acc: {best_acc}')
