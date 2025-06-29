@@ -66,7 +66,7 @@ class MobileNetV2(nn.Module):
                 in_planes = out_planes
         return nn.Sequential(*layers)
     
-    def feature_map(self, x):
+    def feature_map(self, x, layer=0):
         out = F.relu(self.bn1(self.conv1(x)))
         out = self.layers(out)
         out = F.relu(self.bn2(self.conv2(out)))
