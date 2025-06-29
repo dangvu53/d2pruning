@@ -65,6 +65,15 @@ class MobileNetV2(nn.Module):
                 layers.append(Block(in_planes, out_planes, expansion, stride))
                 in_planes = out_planes
         return nn.Sequential(*layers)
+    
+    def feature_map(self, x, layer=0):
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = self.layers(out)
+        out = F.relu(self.bn2(self.conv2(out)))
+        out = F.avg_pool2d(out, 4)
+        out = out.view(out.size(0), -1)
+        return out
+
 
     def forward(self, x):
         out = F.relu(self.bn1(self.conv1(x)))

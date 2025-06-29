@@ -1,0 +1,16 @@
+{"accuracy": 0.3969849246231156}
+{"accuracy": 0.323}
+{"best_accuracy": 0.3969849246231156}
+{"best_test_accuracy": 0.323}
+{"accuracy": 0.3969849246231156}
+{"accuracy": 0.323}.  //electra
+{"best_accuracy": 0.3969849246231156}
+{"best_test_accuracy": 0.323}
+{"accuracy": 0.5226130653266332}
+{"accuracy": 0.343}. //bert
+{"best_accuracy": 0.5477386934673367}
+{"best_test_accuracy": 0.343}
+{"accuracy": 0.5326633165829145}
+{"accuracy": 0.365}
+{"best_accuracy": 0.5477386934673367}
+{"best_test_accuracy": 0.365} //roberta

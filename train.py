@@ -8,12 +8,14 @@ from datetime import datetime
 from selection_mp import select_coreset
 
 from core.model_generator import wideresnet, preact_resnet, resnet
+from core.model_generator.models.efficientnet import EfficientNetB0
+from core.model_generator.models.mobilenetv2 import MobileNetV2
 from core.training import Trainer, TrainingDynamicsLogger
 from core.data import IndexDataset, CIFARDataset, SVHNDataset, CINIC10Dataset, TinyImageNetDataset
 from core.utils import print_training_info, StdRedirect
 import numpy as np
 
-model_names = ['resnet18', 'wrn-34-10', 'preact_resnet18']
+model_names = ['resnet18', 'wrn-34-10', 'preact_resnet18', 'resnet101','efficientnet_b0', 'mobilenetv2']
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10,CIFAR100 Training')
 
@@ -25,7 +27,7 @@ parser.add_argument('--iterations', type=int, metavar='N',
 parser.add_argument('--batch-size', type=int, default=256, metavar='N',
                     help='input batch size for training (default: 256)')
 parser.add_argument('--lr', type=float, default=0.1)
-parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50'])
+parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50', 'resnet101', 'efficientnet_b0', 'mobilenetv2'])
 parser.add_argument('--dataset', type=str, default='cifar10', choices=['cifar10', 'cifar100', 'svhn', 'cinic10', 'tinyimagenet'])
 
 ######################### Print Setting #########################
@@ -95,7 +97,7 @@ parser.add_argument('--gpuid', type=str, default='0',
 # parser.add_argument('--augment', choices=['cifar10', 'rand'], default='cifar10')
 
 args = parser.parse_args()
-start_time = datetime.now()
+start_time = time.time()
 
 assert args.epochs is None or args.iterations is None, "Both epochs and iterations are used!"
 
@@ -195,6 +197,15 @@ if args.network == 'resnet18':
 if args.network == 'resnet50':
     print('resnet50')
     model = resnet('resnet50', num_classes=num_classes, device=device)
+if args.network == 'resnet101':
+    print('resnet101')
+    model = resnet('resnet101', num_classes=num_classes, device=device)
+if args.network == 'efficientnet_b0':
+    print('EfficientNetB0')
+    model = EfficientNetB0(num_classes=num_classes)
+if args.network == 'mobilenetv2':
+    print('MobileNetV2')
+    model = MobileNetV2(num_classes=num_classes)
 
 model = model.to(device)
 

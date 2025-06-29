@@ -9,6 +9,8 @@ import argparse
 import pickle
 
 from core.model_generator import wideresnet, preact_resnet, resnet
+from core.model_generator.models.efficientnet import EfficientNetB0
+from core.model_generator.models.mobilenetv2 import MobileNetV2
 from core.training import Trainer, TrainingDynamicsLogger
 from core.data import IndexDataset, CIFARDataset, SVHNDataset, CINIC10Dataset, TinyImageNetDataset
 from core.utils import print_training_info, StdRedirect
@@ -19,6 +21,7 @@ parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--batch-size', type=int, default=256, metavar='N',
                     help='input batch size for training.')
 parser.add_argument('--dataset', type=str, default='cifar10', choices=['cifar10', 'cifar100', 'tiny', 'svhn', 'cinic10', 'tinyimagenet'])
+parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50', 'resnet101', 'efficientnet_b0', 'mobilenetv2'])
 
 ######################### Path Setting #########################
 parser.add_argument('--data-dir', type=str, default='../data/',
@@ -209,7 +212,22 @@ data_importance = {}
 trainloader = torch.utils.data.DataLoader(
     trainset, batch_size=args.batch_size, shuffle=False, num_workers=16)
 
-model = resnet('resnet18', num_classes=num_classes, device=device)
+if args.network == 'resnet18':
+    print('resnet18')
+    model = resnet('resnet18', num_classes=num_classes, device=device)
+if args.network == 'resnet50':
+    print('resnet50')
+    model = resnet('resnet50', num_classes=num_classes, device=device)
+if args.network == 'resnet101':
+    print('resnet101')
+    model = resnet('resnet101', num_classes=num_classes, device=device)
+if args.network == 'efficientnet_b0':
+    print('EfficientNetB0')
+    model = EfficientNetB0(num_classes=num_classes)
+if args.network == 'mobilenetv2':
+    print('MobileNetV2')
+    model = MobileNetV2(num_classes=num_classes)
+
 model = model.to(device)
 
 print(f'Ckpt path: {ckpt_path}.')

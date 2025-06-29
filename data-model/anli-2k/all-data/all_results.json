@@ -1,0 +1,26 @@
+{"best_accuracy": 0.49748743718592964}
+{"best_test_accuracy": 0.32}
+{"accuracy": 0.49748743718592964}
+{"accuracy": 0.32}      //electra
+{"best_accuracy": 0.49748743718592964}
+{"best_test_accuracy": 0.32}
+{"accuracy": 0.6180904522613065}
+{"accuracy": 0.383}
+{"best_accuracy": 0.6180904522613065}
+{"best_test_accuracy": 0.383}
+{"accuracy": 0.6180904522613065}
+{"accuracy": 0.383}
+{"best_accuracy": 0.6180904522613065}
+{"best_test_accuracy": 0.383}
+{"accuracy": 0.39195979899497485}
+{"accuracy": 0.327}
+{"best_accuracy": 0.39195979899497485}
+{"best_test_accuracy": 0.327}
+{"accuracy": 0.6180904522613065}
+{"accuracy": 0.383}
+{"best_accuracy": 0.6180904522613065}
+{"best_test_accuracy": 0.383}.    //bert
+{"accuracy": 0.39195979899497485}
+{"accuracy": 0.327}
+{"best_accuracy": 0.39195979899497485}
+{"best_test_accuracy": 0.327}. //roberta

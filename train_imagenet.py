@@ -12,13 +12,14 @@ from datetime import datetime
 from selection_mp import select_coreset
 
 from torchvision import models
+import timm
 
 from core.model_generator import wideresnet, preact_resnet, resnet
 from core.training import Trainer, TrainingDynamicsLogger
 from core.data import CoresetSelection, IndexDataset, CIFARDataset, ImageNetDataset
 from core.utils import print_training_info, StdRedirect
 
-model_names = ['resnet18', 'wrn-34-10', 'preact_resnet18']
+model_names = ['resnet18', 'wrn-34-10', 'preact_resnet18', 'mobilenetv2','swin_base', 'resnet101', 'efficientnet_b0']
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 
@@ -30,7 +31,7 @@ parser.add_argument('--iterations', type=int, metavar='N',
 parser.add_argument('--batch-size', type=int, default=256, metavar='N',
                     help='input batch size for training (default: 256)')
 parser.add_argument('--lr', type=float, default=0.1)
-parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50', 'resnet34'])
+parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50', 'resnet34', 'resnet101', 'efficientnet_b0', 'mobilenetv2','swin_base'])
 parser.add_argument('--scheduler', type=str, default='default', choices=['default', 'short', 'cosine', 'short-400k'])
 
 parser.add_argument('--ignore-td', action='store_true', default=False)
@@ -164,7 +165,7 @@ coreset_descending = (args.data_score_descending == 1)
 total_num = len(trainset)
 
 if args.coreset:
-    start_time = time.time()
+    start_time = datetime.now()
     trainset, coreset_index, _ = select_coreset(trainset, args)
     print("Completed coreset selection in %s seconds" % (time.time()-start_time))
     np.save(coreset_index_path, np.array(coreset_index))
@@ -192,6 +193,22 @@ if args.network == 'resnet34':
 if args.network == 'resnet50':
     print('Using resnet50.')
     model = torchvision.models.resnet50(pretrained=False, progress=True)
+if args.network == 'resnet101':
+    print('Using resnet101.')
+    model = torchvision.models.resnet101(pretrained=False, progress=True)
+if args.network == 'efficientnet_b0':
+    print('Using efficientnet_b0.')
+    model = torchvision.models.efficientnet_b0(pretrained=False, progress=True)
+if args.network == 'swim_base':
+    print('Using swin_base_patch4_window7_224.')
+    model = timm.create_model(
+        'swin_base_patch4_window7_224',
+        pretrained=False,
+        num_classes=1000
+    )
+if args.network == 'mobilenetv2':
+    print('Using mobilenetv2.')
+    model = torchvision.models.mobilenet_v2(pretrained=False, progress=True)
 
 model=torch.nn.parallel.DataParallel(model).cuda()
 # model=model.cuda()
@@ -279,7 +296,7 @@ test_loss, test_acc = trainer.test(model, testloader, criterion, device, log_int
 # test_loss, test_acc = trainer.test(model, testloader, criterion, device, log_interval=200,  printlog=True, topk=1)
 
 print('done')
-# print(f'Total time consumed: {(datetime.now() - start_time).total_seconds():.2f}')
+print(f'Total time consumed: {(datetime.now() - start_time).total_seconds():.2f}')
 print('==========================')
 print(f'Best acc: {best_acc * 100:.2f}')
 print(f'Best acc: {best_acc}')
