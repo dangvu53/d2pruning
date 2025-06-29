@@ -19,7 +19,7 @@ from core.training import Trainer, TrainingDynamicsLogger
 from core.data import CoresetSelection, IndexDataset, CIFARDataset, ImageNetDataset
 from core.utils import print_training_info, StdRedirect
 
-model_names = ['resnet18', 'wrn-34-10', 'preact_resnet18']
+model_names = ['resnet18', 'wrn-34-10', 'preact_resnet18', 'mobilenetv2','swin_base', 'resnet101', 'efficientnet_b0']
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 
@@ -31,7 +31,7 @@ parser.add_argument('--iterations', type=int, metavar='N',
 parser.add_argument('--batch-size', type=int, default=256, metavar='N',
                     help='input batch size for training (default: 256)')
 parser.add_argument('--lr', type=float, default=0.1)
-parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50', 'resnet34', 'resnet101', 'efficientnet_b0', 'swin_base'])
+parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50', 'resnet34', 'resnet101', 'efficientnet_b0', 'mobilenetv2','swin_base'])
 parser.add_argument('--scheduler', type=str, default='default', choices=['default', 'short', 'cosine', 'short-400k'])
 
 parser.add_argument('--ignore-td', action='store_true', default=False)
@@ -206,6 +206,9 @@ if args.network == 'swim_base':
         pretrained=False,
         num_classes=1000
     )
+if args.network == 'mobilenetv2':
+    print('Using mobilenetv2.')
+    model = torchvision.models.mobilenet_v2(pretrained=False, progress=True)
 
 model=torch.nn.parallel.DataParallel(model).cuda()
 # model=model.cuda()
