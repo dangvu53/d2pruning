@@ -139,7 +139,7 @@ class EfficientNet(nn.Module):
                 in_channels = out_channels
         return nn.Sequential(*layers)
 
-    def feature_map(self, x):
+    def feature_map(self, x, layer=0):
         out = swish(self.bn1(self.conv1(x)))
         out = self.layers(out)
         out = F.adaptive_avg_pool2d(out, 1)

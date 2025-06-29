@@ -43,7 +43,7 @@ class MobileNet(nn.Module):
             in_planes = out_planes
         return nn.Sequential(*layers)
 
-    def forward(self, x):
+    def forward(self, x, layer=0):
         out = F.relu(self.bn1(self.conv1(x)))
         out = self.layers(out)
         out = F.avg_pool2d(out, 2)
