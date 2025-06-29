@@ -279,7 +279,7 @@ def select_coreset(trainset, args):
     trainset = torch.utils.data.Subset(trainset, coreset_index)
     print("Pruned %s samples in original train set to %s" % (total_num, len(trainset)))
 
-    out_file = '../data-pruning-analysis/%s_%s.png' % (args.dataset, args.task_name)
+    out_file = './data-pruning-analysis/%s_%s.png' % (args.dataset, args.task_name)
 
     if args.coreset_mode == 'graph' and args.coreset_key == 'unity':
         entropy = plot_score_distribution(graph_scores, coreset_index_no_mis.astype(np.int32),
