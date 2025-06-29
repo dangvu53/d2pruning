@@ -99,7 +99,7 @@ parser.add_argument('--local_rank', type=str)
 
 
 args = parser.parse_args()
-start_time = datetime.now()
+start_time = time.time()
 
 assert args.epochs is None or args.iterations is None, "Both epochs and iterations are used!"
 
