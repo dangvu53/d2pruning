@@ -29,7 +29,7 @@ parser.add_argument('--batch-size', type=int, default=256, metavar='N',
 parser.add_argument('--lr', type=float, default=0.1)
 parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50', 'resnet101', 'efficientnet_b0', 'mobilenetv2'])
 parser.add_argument('--dataset', type=str, default='cifar10', choices=['cifar10', 'cifar100', 'svhn', 'cinic10', 'tinyimagenet'])
-parser.add_argument('--num_workers', type=int, default=16)
+parser.add_argument('--num_workers', type=int, default=4)
 
 ######################### Print Setting #########################
 parser.add_argument('--iterations-per-testing', type=int, default=800, metavar='N',
