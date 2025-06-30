@@ -152,7 +152,9 @@ class TinyImageNetDataset(object):
             std = [0.229, 0.224, 0.225]
 
             transform = transforms.Compose([
-                transforms.RandomResizedCrop(64),
+                #transforms.RandomResizedCrop(64),
+                #transforms.RandomHorizontalFlip(),
+                transforms.RandomCrop(64, padding=4, padding_mode="reflect"),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=mean, std=std),
@@ -174,8 +176,8 @@ class TinyImageNetDataset(object):
         mean = [0.47889522, 0.47227842, 0.43047404]
         std = [0.24205776, 0.23828046, 0.25874835]
         transform_test = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(64),
+            #transforms.Resize(256),
+            #transforms.CenterCrop(64),
             transforms.ToTensor(),
             transforms.Normalize(mean=mean, std=std),
         ])
