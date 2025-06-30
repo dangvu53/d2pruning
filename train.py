@@ -176,7 +176,7 @@ print("%s samples in test set" % len(testset))
 trainloader = torch.utils.data.DataLoader(
     trainset, batch_size=args.batch_size, shuffle=True, num_workers=16)
 testloader = torch.utils.data.DataLoader(
-    testset, batch_size=512, shuffle=True, num_workers=16)
+    testset, batch_size=args.batch_size, shuffle=True, num_workers=16)
 
 iterations_per_epoch = len(trainloader)
 if args.iterations is None:
