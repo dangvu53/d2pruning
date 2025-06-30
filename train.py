@@ -29,6 +29,7 @@ parser.add_argument('--batch-size', type=int, default=256, metavar='N',
 parser.add_argument('--lr', type=float, default=0.1)
 parser.add_argument('--network', type=str, default='resnet18', choices=['resnet18', 'resnet50', 'resnet101', 'efficientnet_b0', 'mobilenetv2'])
 parser.add_argument('--dataset', type=str, default='cifar10', choices=['cifar10', 'cifar100', 'svhn', 'cinic10', 'tinyimagenet'])
+parser.add_argument('--num_workers', type=int, default=16)
 
 ######################### Print Setting #########################
 parser.add_argument('--iterations-per-testing', type=int, default=800, metavar='N',
@@ -174,9 +175,9 @@ else:
 print("%s samples in test set" % len(testset))
 
 trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=args.batch_size, shuffle=True, num_workers=16)
+    trainset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 testloader = torch.utils.data.DataLoader(
-    testset, batch_size=args.batch_size, shuffle=True, num_workers=16)
+    testset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 
 iterations_per_epoch = len(trainloader)
 if args.iterations is None:
