@@ -55,6 +55,7 @@ class MobileNetV2(nn.Module):
         self.layers = self._make_layers(in_planes=32)
         self.conv2 = nn.Conv2d(320, 1280, kernel_size=1, stride=1, padding=0, bias=False)
         self.bn2 = nn.BatchNorm2d(1280)
+        self.pool = nn.AdaptiveAvgPool2d((1, 1))
         self.linear = nn.Linear(1280, num_classes)
 
     def _make_layers(self, in_planes):
@@ -70,8 +71,8 @@ class MobileNetV2(nn.Module):
         out = F.relu(self.bn1(self.conv1(x)))
         out = self.layers(out)
         out = F.relu(self.bn2(self.conv2(out)))
-        out = F.avg_pool2d(out, 4)
-        out = out.view(out.size(0), -1)
+        out = self.pool(out)
+        out = torch.flatten(out, 1)
         return out
 
 
@@ -80,8 +81,8 @@ class MobileNetV2(nn.Module):
         out = self.layers(out)
         out = F.relu(self.bn2(self.conv2(out)))
         # NOTE: change pooling kernel_size 7 -> 4 for CIFAR10
-        out = F.avg_pool2d(out, 4)
-        out = out.view(out.size(0), -1)
+        out = self.pool(out)
+        out = torch.flatten(out, 1)
         out = self.linear(out)
         return out
 
