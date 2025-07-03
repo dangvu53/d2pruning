@@ -582,9 +582,20 @@ def main():
         datasets.utils.logging.set_verbosity_error()
         transformers.utils.logging.set_verbosity_error()
 
+    def seed_everything(seed):
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
     # If passed along, set the training seed now.
     if args.seed is not None:
         set_seed(args.seed)
+        seed_everything(args.seed)
+
 
     # Handle the repository creation
     if accelerator.is_main_process:
@@ -1034,9 +1045,12 @@ def main():
         else:
             data_collator = DataCollatorWithPadding(tokenizer, pad_to_multiple_of=(8 if accelerator.mixed_precision == "fp16" else None))
 
+    g = torch.Generator()
+    g.manual_seed(args.seed)
 
     train_dataloader = DataLoader(
-        train_dataset, shuffle=True, collate_fn=data_collator, batch_size=args.per_device_train_batch_size
+        train_dataset, shuffle=True, collate_fn=data_collator, batch_size=args.per_device_train_batch_size, generator=g,
+        worker_init_fn=lambda _: set_seed(args.seed)
     )
     eval_dataloader = DataLoader(eval_dataset,
                                  collate_fn=DataCollatorWithPadding(tokenizer, pad_to_multiple_of=(8 if accelerator.mixed_precision == "fp16" else None)),
