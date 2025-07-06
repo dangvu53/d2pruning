@@ -652,7 +652,7 @@ def main():
     elif args.task_name in ['imdb']:
         raw_datasets = preprocess_for_val(args, raw_datasets, val_size=1000)
     elif args.task_name == 'anli':
-        # raw_datasets = preprocess_for_val(args, raw_datasets, val_size=5000, is_anli = True)
+        raw_datasets = preprocess_for_val(args, raw_datasets, val_size=5000, is_anli = True)
         pass
     elif args.task_name == 'goddawg/anli-2k':
         raw_datasets = preprocess_for_val(args, raw_datasets, val_size=200)
