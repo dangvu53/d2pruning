@@ -542,6 +542,7 @@ def parse_args():
     parser.add_argument(
         "--save_debug_checkpoints",
         action="store_true",
+        default=False,
         help="Save model state at various points during the first step for a reproducibility check."
     )
 
@@ -1191,7 +1192,7 @@ def main():
                 if step > 0:
                     if args.save_debug_checkpoints:
                         break
-                    else: 
+                    else:
                         continue
                 
 
