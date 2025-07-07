@@ -1189,7 +1189,7 @@ def main():
                     continue
 
                 if step > 0:
-                    if args.save_debus_checkpoints:
+                    if args.save_debug_checkpoints:
                         break
                     else: 
                         continue
