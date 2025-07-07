@@ -754,10 +754,10 @@ def main():
                                                                       num=coreset_size_per_label[label])
                     coreset_index.append(sample_idxs_by_label[coreset_index_by_label])
                 coreset_index = torch.cat(coreset_index)
-
             else:
+                coreset_num = int(args.coreset_ratio * total_num)  # <-- FIX: ensure coreset_num is defined
                 coreset_index = CoresetSelection.random_selection(total_num=total_num,
-                                                                  num=args.coreset_ratio * total_num)
+                                                                  num=coreset_num)
 
         if args.coreset_mode == 'coreset':
             with open(args.data_score_path, 'rb') as f:
