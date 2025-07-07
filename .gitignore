@@ -4,6 +4,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+data-model/
 
 # Python cache files
 __pycache__/

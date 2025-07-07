@@ -24,3 +24,7 @@
 {"accuracy": 0.327}
 {"best_accuracy": 0.39195979899497485}
 {"best_test_accuracy": 0.327}. //roberta
+{"accuracy": 0.39195979899497485}
+{"accuracy": 0.327}
+{"best_accuracy": -1}
+{"best_test_accuracy": -1}

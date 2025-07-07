@@ -539,6 +539,13 @@ def parse_args():
     # Validation
     parser.add_argument('--val-index-path', type=str)
     parser.add_argument('--test-index-path', type=str)
+    parser.add_argument(
+        "--save_debug_checkpoints",
+        action="store_true",
+        help="Save model state at various points during the first step for a reproducibility check."
+    )
+
+    parser.add_argument("--debug_prefix", type=str, default="", help="Prefix for debug checkpoint files.")
 
     args = parser.parse_args()
 
@@ -1161,6 +1168,14 @@ def main():
                 args.num_train_epochs -= resume_step // len(train_dataloader)
                 resume_step = (args.num_train_epochs * len(train_dataloader)) - resume_step
 
+        if args.save_debug_checkpoints:
+            logger.info("Saving initial weights for reproducibility check...")
+            # Use accelerator.unwrap_model to get the raw model state
+            prefix = args.debug_prefix
+            unwrapped_model = accelerator.unwrap_model(model)
+            torch.save(unwrapped_model.state_dict(), f"{prefix}initial_weights.pt")
+            logger.info("Initial weights saved to initial_weights.pt")
+
         for epoch in range(args.num_train_epochs):
             model.train()
             if args.with_tracking:
@@ -1172,6 +1187,13 @@ def main():
                 # We need to skip steps until we reach the resumed step
                 if args.resume_from_checkpoint and epoch == 0 and step < resume_step:
                     continue
+
+                if step > 0:
+                    if args.save_debus_checkpoints:
+                        break
+                    else: 
+                        continue
+                
 
                 outputs = model(**batch)
                 loss = outputs.loss
@@ -1190,12 +1212,39 @@ def main():
                     total_loss += loss.detach().float()
                 loss = loss / args.gradient_accumulation_steps
                 accelerator.backward(loss)
+
+                if args.save_debug_checkpoints and step == 0 and epoch == 0:
+                    logger.info("Saving artifacts from the first training step...")
+                    prefix = args.debug_prefix
+                    # Save the first batch of data
+                    torch.save(batch, f"{prefix}first_batch.pt")
+                    logger.info("First batch saved to first_batch.pt")
+
+                    # Save the gradients
+                    # We need to unwrap the model to reliably access gradients
+                    unwrapped_model = accelerator.unwrap_model(model)
+                    grads = {name: param.grad.clone() for name, param in unwrapped_model.named_parameters() if param.grad is not None}
+                    torch.save(grads, f"{prefix}first_grads.pt")
+                    logger.info("First gradients saved to first_grads.pt")
+
+
                 if step % args.gradient_accumulation_steps == 0 or step == len(train_dataloader) - 1:
                     optimizer.step()
                     lr_scheduler.step()
                     optimizer.zero_grad()
                     progress_bar.update(1)
                     completed_steps += 1
+
+                if args.save_debug_checkpoints and step == 0 and epoch == 0:
+                    # Save weights AFTER the first update
+                    prefix = args.debug_prefix
+                    unwrapped_model = accelerator.unwrap_model(model)
+                    torch.save(unwrapped_model.state_dict(), f"{prefix}first_updated_weights.pt")
+                    logger.info("First updated weights saved to first_updated_weights.pt")
+                    
+                    # Exit the script
+                    logger.info("All debug checkpoints saved. Exiting now.")
+                    exit() # We are done, no need to continue training
 
                 if isinstance(checkpointing_steps, int):
                     if completed_steps % checkpointing_steps == 0:
@@ -1206,6 +1255,10 @@ def main():
 
                 if completed_steps >= args.max_train_steps:
                     break
+
+               
+            if args.save_debug_checkpoints:
+                break # break the outer loop
 
             model.eval()
             for step, batch in enumerate(eval_dataloader):
